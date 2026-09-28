@@ -4,21 +4,22 @@ const movieHub =document.querySelector('#movieHub')
 const hamburger = document.querySelector("#hamburger");
 const options = document.querySelector("#options");
 
+const NO_POSTER = "https://placehold.co/300x450/18181b/a1a1aa?text=No+Poster";
 movieForm.addEventListener('submit',(e)=>{
     e.preventDefault();
-    let query =movieInput.value.trim()
+    let query =movieInput.value.trim();
      if(!query){
         return
      }
-     searchMovie(query)
+     searchMovie(query);
     
 })
 async function searchMovie(movieName){
     movieHub.innerHTML =`<span class="loader"></span>`
     try{
-      let response= await fetch(`https://www.omdbapi.com/?apikey=ba45ea0f&s=${movieName}`);
+      let response= await fetch(`https://www.omdbapi.com/?apikey=ba45ea0f&s=${encodeURIComponent(movieName)}`);
        let data = await response.json();
-       console.log(data)
+     
 
        if(data.Response ==='True'){
        displayMovies(data.Search)
@@ -30,13 +31,15 @@ async function searchMovie(movieName){
   movieHub.innerHTML = `<p class="col-span-full text-center text-red-400 py-16 text-lg">Error loading movies. Please try again.</p>`;
 }
 }
-function displayMovies(data){
+function displayMovies(movies){
     movieHub.innerHTML =""
-  data.forEach((movie)=>{
+  movies.forEach((movie)=>{
     const div = document.createElement('div')
 
     div.dataset.imdbID =movie.imdbID;
     div.className = "movie-card bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden hover:border-red-500 hover:scale-105 cursor-pointer transition flex flex-col group";
+      const poster = (movie.Poster && movie.Poster !== "N/A") ? movie.Poster : NO_POSTER;
+        console.log({poster , mp :movie.Poster });
       div.innerHTML = `
         <div>
             <img src="${movie.Poster}"

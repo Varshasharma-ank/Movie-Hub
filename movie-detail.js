@@ -1,8 +1,11 @@
 const movieDetail =document.querySelector('#movie-detail')
 const params = new URLSearchParams(location.search)
-const imdbID =params.get('id')
+const imdbID = params.get("id");
+
+const NO_POSTER = "https://placehold.co/400x600/18181b/a1a1aa?text=No+Poster";
+ // console.log(imdbID)
 if(imdbID){
-    searchMovies(imdbID.trim())
+    searchMovies(imdbID)
 }else {
     movieDetail.innerHTML = `
         <div class="text-center py-20">
@@ -13,18 +16,15 @@ if(imdbID){
 }
 
 async function searchMovies(imdbID){
-    movieDetail.innerHTML = `
-        <div class="flex justify-center py-20">
-            <span class="loader"></span>
-        </div>
-    `;
+     movieDetail.innerHTML =`<span class="loader"></span>`
+   //  console.log(imdbID)
     try{
-      let response= await fetch(`https://www.omdbapi.com/?apikey=ba45ea0f&i=${imdbID}&plot=full`);
+      let response= await fetch(`https://www.omdbapi.com/?apikey=ba45ea0f&i=${encodeURIComponent(imdbID)}&plot=full`);
        let data = await response.json();
-       console.log(data)
+     
 
        if(data.Response ==='True'){
-       displayMovie(data)
+       displayMovie(data);
        }else{
          movieDetail.innerHTML = `
                 <div class="text-center py-20">
@@ -44,12 +44,14 @@ async function searchMovies(imdbID){
 }
 
 function displayMovie(data){
+ document.title = `${data.Title} - movieHub`;
 
+    const poster = (data.Poster && data.Poster !== "N/A") ? data.Poster : NO_POSTER;
      movieDetail.innerHTML = `
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 bg-zinc-900/60 border border-zinc-800 p-6 sm:p-8 rounded-2xl">
             <div class="flex justify-center">
                 <img 
-                    src="${data.Poster}" 
+                    src="${poster}" 
                     alt="${data.Title}" 
                     class="w-full max-w-sm rounded-xl object-cover shadow-2xl border border-zinc-800"
                 >
